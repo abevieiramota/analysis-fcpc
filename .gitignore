@@ -71,3 +71,5 @@ target/
 
 # exclude data from source control by default
 /data/
+# não há url para download dos arquivos(nem tive tempo de colocar noutro repositório os que já baixei ^.^)
+!/data/fcpc/
