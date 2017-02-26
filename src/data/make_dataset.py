@@ -5,48 +5,83 @@ import logging
 from dotenv import find_dotenv, load_dotenv
 import pandas as pd
 
-read_cfg = {'decimal': ',',
+PF_READ_CFG = {'decimal': ',',
             'thousands': '.', 
             'parse_dates': [4],
             'date_parser': lambda date: pd.datetime.strptime(date, '%d/%m/%Y')
            }
 
-columns_rename = {'TIPO DE PAGAMENTO': 'tipo_pagamento',
+PF_COLUMNS_RENAME = {'TIPO DE PAGAMENTO': 'tipo_pagamento',
                   'VALOR (R$)': 'valor',
                   'CPF': 'cpf',
                   'NOME': 'nome',
                   'PROJETO': 'projeto',
                   'DATA': 'data'}
 
+PF_DIR = r"..\..\data\raw\fcpc\pagamento pessoa fisica"
+PF_OUT_FILEPATH = r"..\..\data\processed\fisica.csv"
+
+PJ_READ_CFG = {'decimal': ',',
+            'thousands': '.', 
+            'parse_dates': [3],
+            'date_parser': lambda date: pd.datetime.strptime(date, '%d/%m/%Y'),
+            'quotechar': '"',
+            'encoding': 'utf-8-sig'
+           }
+
+PJ_COLUMNS_RENAME = {'VALOR (R$)': 'valor',
+                  'CNPJ': 'cnpj',
+                  'NOME': 'nome',
+                  'PROJETO': 'projeto',
+                  'DATA': 'data'}
+
+PJ_DIR = r"..\..\data\raw\fcpc\pagamento pessoa juridica"
+PJ_OUT_FILEPATH = r"..\..\data\processed\juridica.csv"
+
+OUT_ENCODING = 'utf-8'
 
 
 
-@click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
-def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
-    """
+def make_pagamentos_pessoa_fisica():
+
     logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
+    logger.info('making final data set from raw data - pagamentos para pessoas físicas')
 
-    filenames = os.listdir(input_filepath)
+    filenames = os.listdir(PF_DIR)
 
     df = pd.DataFrame()
 
     for filename in filenames:
         
-        df_ = pd.read_csv(os.path.join(input_filepath, filename), **read_cfg)
+        df_ = pd.read_csv(os.path.join(PF_DIR, filename), **PF_READ_CFG)
         df_['filename'] = filename
         
         df = df.append(df_, ignore_index=True)
         
-    df.rename(columns=columns_rename, inplace=True)
+    df.rename(columns=PF_COLUMNS_RENAME, inplace=True)
 
-    df.to_csv(os.path.join(output_filepath, 'fisica.csv'), index=False, encoding='utf-8')
+    df.to_csv(PF_OUT_FILEPATH, index=False, encoding=OUT_ENCODING)
 
 
+def make_pagamentos_pessoa_juridica():
+
+    logger = logging.getLogger(__name__)
+    logger.info('making final data set from raw data - pagamentos para pessoas jurídicas')
+
+    filenames = os.listdir(PJ_DIR)
+
+    df = pd.DataFrame()
+
+    for filename in filenames:
+        
+        df_ = pd.read_csv(os.path.join(PJ_DIR, filename), **PJ_READ_CFG)
+        df_['filename'] = filename
+        
+        df = df.append(df_, ignore_index=True)
+        
+    df.rename(columns=PJ_COLUMNS_RENAME, inplace=True)
+
+    df.to_csv(PJ_OUT_FILEPATH, index=False, encoding=OUT_ENCODING)
 
 
 if __name__ == '__main__':
@@ -60,4 +95,5 @@ if __name__ == '__main__':
     # load up the .env entries as environment variables
     load_dotenv(find_dotenv())
 
-    main()
+    make_pagamentos_pessoa_fisica()
+    make_pagamentos_pessoa_juridica()
