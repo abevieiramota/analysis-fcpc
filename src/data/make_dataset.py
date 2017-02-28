@@ -2,7 +2,6 @@
 import os
 import click
 import logging
-from dotenv import find_dotenv, load_dotenv
 import pandas as pd
 
 PF_READ_CFG = {'decimal': ',',
@@ -19,7 +18,7 @@ PF_COLUMNS_RENAME = {'TIPO DE PAGAMENTO': 'tipo_pagamento',
                   'DATA': 'data'}
 
 PF_DIR = r"..\..\data\raw\fcpc\pagamento pessoa fisica"
-PF_OUT_FILEPATH = r"..\..\data\processed\fisica.csv"
+PF_OUT_FILEPATH = r"..\..\data\processed\fcpc\fisica.csv"
 
 PJ_READ_CFG = {'decimal': ',',
             'thousands': '.', 
@@ -36,7 +35,7 @@ PJ_COLUMNS_RENAME = {'VALOR (R$)': 'valor',
                   'DATA': 'data'}
 
 PJ_DIR = r"..\..\data\raw\fcpc\pagamento pessoa juridica"
-PJ_OUT_FILEPATH = r"..\..\data\processed\juridica.csv"
+PJ_OUT_FILEPATH = r"..\..\data\processed\fcpc\juridica.csv"
 
 OUT_ENCODING = 'utf-8'
 
@@ -90,10 +89,6 @@ if __name__ == '__main__':
 
     # not used in this stub but often useful for finding various files
     project_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
-
-    # find .env automagically by walking up directories until it's found, then
-    # load up the .env entries as environment variables
-    load_dotenv(find_dotenv())
 
     make_pagamentos_pessoa_fisica()
     make_pagamentos_pessoa_juridica()
